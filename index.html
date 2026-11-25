@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Penjinak Bom · Ms Marsa</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:#0b1116;color:#e9f1ef;font-family:Fredoka,"Trebuchet MS",system-ui,sans-serif}
+.page{max-width:1100px;margin:0 auto;padding:12px}
+.rot{display:none;background:#1b2a33;border-radius:12px;padding:10px 14px;margin-bottom:10px;color:#ffd166}
+@media (orientation:portrait) and (max-width:700px){.rot{display:block}}
+.full:fullscreen{display:grid;place-items:center;background:#000}
+.stage{position:relative;aspect-ratio:16/9;width:100%;container-type:inline-size;border-radius:14px;overflow:hidden;font-size:max(1.6cqw,9px);background:radial-gradient(circle at 50% 40%,#2a3841,#0b1014)}
+.stage.v{aspect-ratio:9/16;width:min(100%,calc(86vh*.5625));margin:0 auto;font-size:max(4.1cqw,9px)}
+.full:fullscreen .stage{width:min(100vw,177.78vh);border-radius:0}.full:fullscreen .stage.v{width:min(100vw,56.25vh)}
+.play{position:absolute;inset:0}
+.hud{position:absolute;left:1.5em;right:1.5em;top:1em;display:flex;justify-content:space-between;gap:1em;font-weight:600;font-size:1.5em}
+.hud span:first-child{color:#ff6b6b}
+.wm{position:absolute;right:1.5em;bottom:1em;color:#b9cbc8;font-weight:600;font-size:1.3em}
+.ich{position:absolute;left:1.5em;bottom:2em;width:10em;height:10em}
+.ich svg,.ich img{width:100%;height:100%;object-fit:contain}
+.dev{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);width:40em;background:#1d262c;border:.25em solid #3b4b55;border-radius:1.4em;padding:1.2em;box-shadow:0 1em 3em #000a}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.8em}
+.leds{display:flex;gap:.6em}.led{display:block;width:1.4em;height:1.4em;border-radius:50%;background:#3a1717;border:.12em solid #000}.led.on{background:#3ddc84;box-shadow:0 0 .8em #3ddc84}
+.clk{font:700 3.2em "Courier New",monospace;background:#0b0f10;color:#ff4d4d;padding:.05em .5em;border-radius:.3em;text-shadow:0 0 .4em #ff4d4d}
+.clk.hot{animation:blink .5s steps(2) infinite}@keyframes blink{50%{opacity:.35}}
+.lcd{background:#0b140f;color:#9dffb5;border-radius:.7em;padding:.5em 1em;min-height:3.6em;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;font-weight:600;font-size:2.1em;line-height:1.25}
+.lcd small{display:block;font-size:.6em;font-weight:400;color:#cfe9d8;line-height:1.3}
+.lcd .go{font-size:.55em;margin-top:.3em}
+.wires{display:grid;grid-template-columns:repeat(4,1fr);gap:1em;margin-top:.9em;height:11em}
+.wr{background:none;border:0;color:inherit;font:inherit;display:flex;flex-direction:column;align-items:center;cursor:pointer;padding:0;min-width:0}
+.wire{flex:1;width:.9em;display:flex;flex-direction:column}
+.wire i{display:block;flex:1;background:var(--c);box-shadow:inset .15em 0 rgba(255,255,255,.35)}
+.wa{border-radius:.45em .45em 0 0}.wb{border-radius:0 0 .45em .45em;transform-origin:top center}
+.cut .wb{animation:fall .6s forwards}@keyframes fall{to{transform:translateY(1.2em) rotate(28deg);opacity:.25}}
+.tag{background:#0d1317;border:.2em solid var(--c);border-radius:.7em;padding:.15em .5em;font-size:1.7em;min-width:2.2em;text-align:center;margin-top:.3em}
+.wr:focus-visible{outline:3px solid #fff;outline-offset:2px;border-radius:8px}
+.v .hud{font-size:1.15em}.v .wm{bottom:auto;right:auto;left:50%;transform:translateX(-50%);top:3.4em}
+.v .ich{left:50%;transform:translateX(-50%);top:6em;bottom:auto;width:6.5em;height:6.5em}
+.v .dev{width:22em;top:13em;transform:translateX(-50%);padding:.9em}
+.v .clk{font-size:2.6em}.v .lcd{font-size:1.65em}.v .wires{height:9.5em;gap:.5em}.v .tag{font-size:1.25em;padding:.15em .3em}
+.boom{position:absolute;inset:0;display:none;place-items:center;pointer-events:none;font-weight:700;font-size:7em;color:#fff;text-shadow:0 0 .3em #ff7a00}
+.boom.on{display:grid;animation:bm 1.2s forwards}@keyframes bm{0%{background:#fff}25%{background:radial-gradient(circle,#ffb347,#ff3d00 55%,transparent 72%)}100%{background:transparent;opacity:0}}
+.shake{animation:shk .5s}@keyframes shk{20%{transform:translate(-1em,.5em)}40%{transform:translate(1em,-.5em)}60%{transform:translate(-.7em,.3em)}80%{transform:translate(.5em,0)}}
+.cf{position:absolute;top:-2em;width:.7em;height:1.1em;animation:cf 2.2s linear forwards;pointer-events:none}
+@keyframes cf{to{transform:translateY(50em) rotate(720deg)}}
+@media (prefers-reduced-motion:reduce){.shake,.cut .wb,.cf,.clk.hot{animation:none}}
+.ov{position:absolute;inset:0;display:grid;place-items:center;text-align:center;background:rgba(8,14,18,.9);padding:2em}
+.ov h1{margin:0 0 .3em;font-size:3.4em;line-height:1.05}.ov p{margin:0 0 .8em;font-size:1.4em;color:#b9cbc8}
+.go{font:inherit;font-weight:600;font-size:1.5em;padding:.5em 1.8em;border:0;border-radius:99px;background:#ffb454;color:#2a1700;cursor:pointer}
+button:focus-visible,label:focus-within{outline:3px solid #fff;outline-offset:2px}
+.md{font:inherit;border:2px solid #4fd1c5;background:transparent;color:#e9f1ef;border-radius:99px;padding:.3em 1.2em;font-size:1.3em;cursor:pointer;margin:0 .3em}
+.md.on{background:#4fd1c5;color:#06201d}
+.lvg{display:grid;grid-template-columns:repeat(6,1fr);gap:.6em;max-width:34em;margin:.8em auto}
+.lb{font:inherit;font-weight:600;border:2px solid #ff6b6b;background:transparent;color:#e9f1ef;border-radius:.7em;padding:.3em 0;font-size:1.5em;cursor:pointer}
+.lb.on{background:#ff6b6b;color:#2d0508}.lb:disabled{opacity:.4;cursor:not-allowed}
+.lk{background:none;border:0;color:#8aa39f;font:inherit;font-size:1.1em;text-decoration:underline;cursor:pointer;margin-top:.5em}
+.v .md{display:block;margin:.5em auto;font-size:1.5em}.v .lvg{grid-template-columns:repeat(3,1fr)}
+.bar{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.ctl{font:inherit;padding:9px 16px;border-radius:99px;border:1.5px solid #4fd1c5;background:transparent;color:#e9f1ef;cursor:pointer}
+.tip{color:#8aa39f;font-size:.92rem;margin:10px 0 0;line-height:1.45}
+</style></head>
+<body><div class="page">
+<div class="rot">Putar HP ke samping (horizontal) agar layar lebih besar.</div>
+<div class="full" id="full"><div class="stage" id="stage">
+<div class="play" id="play">
+ <div class="hud" id="hud"></div><div class="wm">Ms Marsa</div>
+ <div class="ich" id="ich"><svg viewBox="0 0 100 100" aria-label="Icel"><circle cx="50" cy="52" r="38" fill="#e5383b"/><circle cx="38" cy="46" r="9" fill="#fff"/><circle cx="62" cy="46" r="9" fill="#fff"/><circle class="pp" cx="40" cy="47" r="4.5" fill="#10171c"/><circle class="pp" cx="64" cy="47" r="4.5" fill="#10171c"/><path id="mouth" d="M38 70Q50 76 62 70" stroke="#10171c" stroke-width="4" fill="none" stroke-linecap="round"/></svg></div>
+ <div class="dev"><div class="top"><div class="leds" id="leds"></div><div class="clk" id="clk">10.0</div></div><div class="lcd" id="q"></div><div class="wires" id="w"></div></div>
+</div>
+<div class="boom" id="boom">BOOM!</div><div class="ov" id="ov"></div>
+</div></div>
+<div class="bar"><button class="ctl" id="fs">Layar penuh</button><button class="ctl" id="rs">Menu level</button>
+<label class="ctl">Gambar Icel<input type="file" id="file" accept="image/*" hidden></label>
+<label class="ctl"><input type="checkbox" id="auto" checked> Lanjut otomatis</label></div>
+<p class="tip">Potong kabel yang warnanya menunjuk ke jawaban benar. Di laptop: tombol 1-4 untuk memotong kabel kiri ke kanan. Salah atau waktu habis, bom meledak dan nyawa berkurang. Untuk YouTube Shorts pilih mode Vertikal 9:16 di menu, lalu rekam dalam layar penuh.</p>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const R=(a,b)=>Math.floor(Math.random()*(b-a+1))+a,pick=a=>a[R(0,a.length-1)];
+const shuf=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
+let AC=null;
+const sfx=(()=>{
+ const A=()=>{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state=='suspended')AC.resume();return AC};
+ const tone=(f,at,d,ty='sine',v=.2)=>{try{const a=A(),o=a.createOscillator(),g=a.createGain(),s=a.currentTime+at;o.type=ty;o.frequency.setValueAtTime(f,s);g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(.0001,s+d);o.connect(g);g.connect(a.destination);o.start(s);o.stop(s+d+.02)}catch(e){}};
+ return{
+  ok(){tone(988,0,.14,'triangle',.24);tone(1319,.15,.34,'triangle',.24);tone(1976,.15,.3,'sine',.08)},
+  snip(){tone(1800,0,.03,'square',.08);tone(700,.03,.05,'square',.06)},
+  tick(){tone(900,0,.05,'square',.09)},
+  boom(){try{const a=A(),n=a.sampleRate*.9,b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,2);const s=a.createBufferSource(),g=a.createGain();s.buffer=b;g.gain.value=.5;s.connect(g);g.connect(a.destination);s.start()}catch(e){}tone(120,0,.5,'sine',.4)},
+  win(){[523,659,784,1047,1319].forEach((f,i)=>tone(f,i*.1,.28,'triangle',.22))},
+  over(){[392,330,262,196].forEach((f,i)=>tone(f,i*.18,.32,'sawtooth',.18))}}})();
+
+/* ---------- bank soal ---------- */
+function genOp(l,k){let a,b,ans,p,w;
+ if(k==0){const r=[[3,9,3,9],[11,49,11,49]][l];a=R(r[0],r[1]);b=R(r[2],r[3]);ans=a+b;p=`${a} + ${b} = ?`;w=`${a} + ${b} = ${ans}.`}
+ else if(k==1){const r=[[12,20,2,9],[40,99,11,29]][l];a=R(r[0],r[1]);b=R(r[2],r[3]);ans=a-b;p=`${a} − ${b} = ?`;w=`${a} − ${b} = ${ans}.`}
+ else if(k==2){const r=[[2,5,2,5],[3,9,3,9]][l];a=R(r[0],r[1]);b=R(r[2],r[3]);ans=a*b;p=`${a} × ${b} = ?`;w=`${a} × ${b} = ${ans}.`}
+ else{const r=[[2,5,2,5],[3,9,3,9]][l];b=R(r[0],r[1]);ans=R(r[2],r[3]);a=b*ans;p=`${a} ÷ ${b} = ?`;w=`${b} × ${ans} = ${a}, jadi ${a} ÷ ${b} = ${ans}.`}
+ return{p,a:ans,w}}
+function genCampur(k){let p,a,w;
+ if(k==0){const x=R(10,40),y=R(5,30),z=R(3,Math.min(20,x+y-1));a=x+y-z;p=`${x} + ${y} − ${z} = ?`;w=`${x} + ${y} = ${x+y}, lalu dikurangi ${z} = ${a}.`}
+ else if(k==1){const x=R(3,9),y=R(3,9),z=R(5,30);a=x*y+z;p=`${x} × ${y} + ${z} = ?`;w=`Kali dulu: ${x*y}. Lalu tambah ${z} = ${a}.`}
+ else{const x=R(3,12),y=R(3,12),z=R(2,6);a=(x+y)*z;p=`(${x} + ${y}) × ${z} = ?`;w=`Kurung dulu: ${x+y}. Lalu kali ${z} = ${a}.`}
+ return{p,a,w}}
+function genPola(l){let a,w;
+ if(l=='easy'){const d=pick([2,3,4,5,-2,-3]),s=d<0?R(20,30):R(1,10);a=[0,1,2,3,4].map(i=>s+d*i);w=`Tiap angka ${d>0?'bertambah':'berkurang'} ${Math.abs(d)}.`}
+ else if(l=='med'){const t=R(0,2);
+  if(t==0){const n=R(1,6);a=[0,1,2,3,4].map(i=>(i+n)**2);w='Bilangan kuadrat berurutan.'}
+  else if(t==1){const s=R(1,3),m=pick([2,3]);a=[0,1,2,3,4].map(i=>s*m**i);w=`Tiap angka dikali ${m}.`}
+  else{const s=R(1,9),x=R(2,4),y=R(5,8);a=[s];for(let i=0;i<4;i++)a.push(a[i]+(i%2?y:x));w=`Bergantian tambah ${x} dan ${y}.`}}
+ else{const t=R(0,2);
+  if(t==0){a=[R(1,3),R(2,5)];while(a.length<6)a.push(a.at(-1)+a.at(-2));w='Tiap angka = jumlah dua angka sebelumnya.'}
+  else if(t==1){const d=R(1,3);a=[R(1,5)];for(let i=0;i<5;i++)a.push(a[i]+d+i);w=`Selisihnya ikut naik: +${d}, +${d+1}, +${d+2}, dan seterusnya.`}
+  else{const x=R(2,5),y=R(2,4),A=R(1,9),B=R(30,40);a=[];for(let i=0;i<4;i++){a.push(A+x*i);if(i<3)a.push(B-y*i)}w=`Dua deret bergantian: naik ${x} dan turun ${y}.`}}
+ return{p:a.slice(0,-1).join(', ')+', ?',a:a.at(-1),w}}
+function genLogika(l){let p,a,w;
+ if(l=='easy'){const x=R(2,9),y=R(2,9);p=`● + ● = ${2*x}<br>● + ▲ = ${x+y}<br>▲ = ?`;a=y;w=`● = ${x}, jadi ▲ = ${x+y} − ${x} = ${y}.`}
+ else{const x=R(2,9),y=R(2,9),z=R(2,9);p=`● + ▲ = ${x+y}<br>▲ + ■ = ${y+z}<br>● + ■ = ${x+z}<br>● + ▲ + ■ = ?`;a=x+y+z;w=`Jumlah ketiga baris = ${2*(x+y+z)}, itu dua kali semuanya, jadi ${a}.`}
+ return{p,a,w}}
+function genJalur(){let a,b,c,d,x,y;do{a=R(2,6);b=R(8,16);c=R(3,8);d=R(5,12);x=a*b;y=c*d}while(x==y);
+ return{p:`Kiri: ${a} × ${b}<br>Kanan: ${c} × ${d}<br>Total jalur terbesar?`,a:Math.max(x,y),x:[Math.min(x,y)],w:`Kiri = ${x}, kanan = ${y}. Yang terbesar: ${Math.max(x,y)}.`}}
+function opts2(a,x){const s=new Set([a]);(x||[]).forEach(v=>s.add(v));while(s.size<4){const v=a+pick([-1,1,-2,2,-10,10,R(-9,9)]);if(v>0)s.add(v)}return shuf([...s]).slice(0,4)}
+
+const LEVELS=[
+ {n:'Tambah & Kurang',t:10,s:[()=>genOp(0,0),()=>genOp(0,1),()=>genOp(1,R(0,1))]},
+ {n:'Perkalian',t:9,s:[()=>genOp(0,2),()=>genOp(1,2),()=>genOp(1,2)]},
+ {n:'Pembagian',t:9,s:[()=>genOp(0,3),()=>genOp(1,3),()=>genOp(1,R(2,3))]},
+ {n:'Operasi Campuran',t:12,s:[()=>genCampur(0),()=>genCampur(1),()=>genCampur(2)]},
+ {n:'Pola Deret',t:15,s:[()=>genPola('easy'),()=>genPola('med'),()=>genPola('hard')]},
+ {n:'Logika Rahasia',t:18,s:[()=>genLogika('easy'),genJalur,()=>genLogika('hard')]}];
+const COL=[['merah','#ff4d4d'],['biru','#3b82f6'],['kuning','#ffd23f'],['hijau','#3ddc84']];
+
+/* ---------- permainan ---------- */
+let MODE='h',UNL=1,SEL=1,ALL=false,G={st:'start'};
+try{UNL=Math.min(6,Math.max(1,+localStorage.getItem('bom_unl')||1))}catch(e){}
+const save=()=>{try{localStorage.setItem('bom_unl',UNL)}catch(e){}};
+function setMode(m){MODE=m;$('stage').className='stage'+(m=='v'?' v':'');const r=document.querySelector('.rot');if(r)r.style.display=m=='v'?'none':''}
+function face(k){const m=$('mouth');if(!m)return;const P={n:['M38 70Q50 76 62 70','none'],h:['M36 64Q50 86 64 64','none'],s:['M42 70Q50 84 58 70Z','#10171c']}[k];m.setAttribute('d',P[0]);m.setAttribute('fill',P[1]);document.querySelectorAll('.pp').forEach(p=>p.setAttribute('r',k=='s'?6.5:4.5))}
+function hud(){$('hud').innerHTML=`<span>${'♥'.repeat(Math.max(G.hearts,0))}</span><span>Level ${G.lv} · ${LEVELS[G.lv-1].n}</span>`}
+function leds(){$('leds').innerHTML=[0,1,2].map(i=>`<i class="led${i<G.step?' on':''}"></i>`).join('')}
+function showOv(h){const o=$('ov');o.innerHTML=h;o.style.display='grid';const b=o.querySelector('.go');if(b)b.focus()}
+function menu(){clearTimeout(G.to);G={st:'start'};paint()}
+function paint(){
+ const ok=l=>l<=UNL||ALL;if(!ok(SEL))SEL=1;
+ showOv(`<div><h1>Penjinak Bom</h1><p>Potong kabel dengan jawaban yang benar sebelum waktu habis!</p>
+ <div><button class="md${MODE=='h'?' on':''}" data-m="h">Horizontal 16:9</button><button class="md${MODE=='v'?' on':''}" data-m="v">Vertikal 9:16 (Shorts)</button></div>
+ <div class="lvg">${LEVELS.map((L,i)=>`<button class="lb${SEL==i+1?' on':''}" data-l="${i+1}" ${ok(i+1)?'':'disabled'} aria-label="Level ${i+1}${ok(i+1)?'':' terkunci'}">${ok(i+1)?i+1:'🔒'}</button>`).join('')}</div>
+ <p>Level ${SEL}: ${LEVELS[SEL-1].n} · ${LEVELS[SEL-1].t} detik per kabel</p>
+ <button class="go" id="st">Mulai</button><br><button class="lk" id="all">${ALL?'Kunci lagi':'Buka semua level'}</button></div>`);
+ document.querySelectorAll('.md').forEach(b=>b.onclick=()=>{setMode(b.dataset.m);paint()});
+ document.querySelectorAll('.lb').forEach(b=>b.onclick=()=>{SEL=+b.dataset.l;paint()});
+ $('all').onclick=()=>{ALL=!ALL;paint()};
+ $('st').onclick=()=>{sfx.tick();begin(SEL,3)}}
+function begin(lv,h){clearTimeout(G.to);SEL=lv;G={st:'ask',lv,step:0,hearts:h,tm:0,tmax:1,lk:0};$('ov').style.display='none';face('n');nextQ()}
+function nextQ(){
+ const L=LEVELS[G.lv-1],q=G.q=L.s[G.step]();q.o=opts2(q.a,q.x);G.tmax=G.tm=L.t;G.st='ask';G.lk=0;G.sc=0;G.fn=null;
+ $('q').innerHTML=q.p;
+ $('w').innerHTML=q.o.map((v,i)=>`<button class="wr" style="--c:${COL[i][1]}" data-i="${i}" aria-label="Kabel ${COL[i][0]}, jawaban ${v}"><span class="wire"><i class="wa"></i><i class="wb"></i></span><b class="tag">${v}</b></button>`).join('');
+ document.querySelectorAll('.wr').forEach(b=>b.onclick=()=>cut(+b.dataset.i));
+ leds();hud();face('n')}
+function after(ms,fn){G.fn=fn;if($('auto').checked)G.to=setTimeout(go,ms);else{$('q').insertAdjacentHTML('beforeend','<button class="go" id="nx">Lanjut</button>');$('nx').onclick=go}}
+function go(){clearTimeout(G.to);const f=G.fn;G.fn=null;if(f)f()}
+function cut(i){
+ if(G.st!='ask')return;G.st='cut';document.querySelectorAll('.wr')[i].classList.add('cut');sfx.snip();
+ const ok=G.q.o[i]===G.q.a;setTimeout(()=>ok?good():bad(false),500)}
+function good(){
+ sfx.ok();G.step++;leds();face('h');
+ if(G.step>=3)return done();
+ G.st='fb';$('q').innerHTML=`<b>Benar!</b><small>${G.q.w}</small>`;after(1700,nextQ)}
+function bad(to){
+ G.st='boom';G.hearts--;hud();sfx.boom();face('s');
+ $('boom').classList.add('on');$('play').classList.add('shake');
+ setTimeout(()=>{$('boom').classList.remove('on');$('play').classList.remove('shake')},1200);
+ $('q').innerHTML=`<b style="color:#ff6b6b">${to?'Waktu habis!':'Salah!'}</b><small>Jawabannya ${G.q.a}. ${G.q.w}</small>`;
+ if(G.hearts<=0){G.to=setTimeout(over,1800);return}
+ after(2600,nextQ)}
+function over(){G.st='over';sfx.over();showOv(`<div><h1>Bomnya meledak!</h1><p>Level ${G.lv}. Coba lagi, pasti bisa!</p><button class="go" id="ag">Coba lagi</button><br><button class="lk" id="mn">Menu level</button></div>`);const l=G.lv;$('ag').onclick=()=>begin(l,3);$('mn').onclick=menu}
+function done(){
+ G.st='done';const lv=G.lv;UNL=Math.min(6,Math.max(UNL,lv+1));save();sfx.win();confetti();
+ G.hearts=Math.min(3,G.hearts+1);hud();
+ $('q').innerHTML=`<b>BOM DIJINAKKAN!</b><small>Level ${lv} selesai${lv<6?' · +1 nyawa':''}</small>`;
+ const h=G.hearts;after(2400,()=>{if(lv>=6)final();else begin(lv+1,h)})}
+function final(){showOv(`<div><h1>Semua bom jinak!</h1><p>Kamu penjinak bom sejati.</p><button class="go" id="ag">Menu level</button></div>`);$('ag').onclick=menu}
+function confetti(){for(let i=0;i<26;i++){const s=document.createElement('span');s.className='cf';s.style.left=R(2,98)+'%';s.style.background=pick(['#ffd166','#4fd1c5','#ff6b6b','#fff']);s.style.animationDelay=(Math.random()*.6)+'s';$('stage').appendChild(s);setTimeout(()=>s.remove(),3000)}}
+let last=0;
+function loop(ts){const dt=Math.min(.05,(ts-last)/1000||0);last=ts;
+ if(G.st=='ask'){G.tm-=dt;const c=$('clk');c.textContent=Math.max(0,G.tm).toFixed(1).padStart(4,'0');c.classList.toggle('hot',G.tm<3);
+  const k=Math.ceil(G.tm*2);if(k!==G.lk){G.lk=k;if(G.tm<=3||k%2==0)sfx.tick()}
+  if(G.tm<3&&!G.sc){G.sc=1;face('s')}
+  if(G.tm<=0)bad(true)}
+ requestAnimationFrame(loop)}
+addEventListener('keydown',e=>{if('1234'.includes(e.key)&&e.key)cut(+e.key-1);if((e.key=='Enter'||e.key==' ')&&$('nx')){e.preventDefault();$('nx').click()}});
+$('fs').onclick=()=>{const f=$('full');document.fullscreenElement?document.exitFullscreen():(f.requestFullscreen&&f.requestFullscreen())};
+$('rs').onclick=menu;
+$('file').onchange=e=>{const f=e.target.files[0];if(!f)return;$('ich').innerHTML=`<img alt="Icel" src="${URL.createObjectURL(f)}">`};
+G={st:'start',lv:1,hearts:3,step:0};leds();paint();requestAnimationFrame(loop);
+</script></body></html>
